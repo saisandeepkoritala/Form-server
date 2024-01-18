@@ -3,14 +3,16 @@ const userRouter = require("./routes/userRoutes");
 const cors=require("cors");
 const cookieParser=require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const morgan = require("morgan");
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(morgan("dev"));
 
 app.use(cors({
     credentials:true,
-    origin:"https://saisandeepkoritala-formapp.netlify.app"
+    origin:"https://saisandeepkoritala-form-app.netlify.app"
 }));
 
 const verifyToken = (req, res, next) => {
@@ -27,17 +29,19 @@ const verifyToken = (req, res, next) => {
         }
 
         // Attach the decoded payload to the request for further use
+        console.log("hi")
         req.user = decoded;
         next();
     });
 };
 
 // Use this middleware on routes that require authentication
-app.get('/secure-route', verifyToken, (req, res) => {
-  // Access the decoded user information using req.user
-    res.json({ message: 'Authorized', user: req.user });
-});
 
 app.use("/api/v1/user",userRouter);
+app.use("/secure-route",verifyToken, (req, res) => {
+    console.log("running on")
+    // Access the decoded user information using req.user
+        res.json({ message: 'Authorized', user: req.user });
+    });
 
 module.exports = app;
