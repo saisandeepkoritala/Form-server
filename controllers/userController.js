@@ -5,8 +5,25 @@ const jwt = require("jsonwebtoken");
 const send = require("../utils/email");
 
 const getToken = (email, password) => {
-    return jwt.sign({ email, password }, "MY-SECRET-KEY-TO-HASH-THE-LOGIN");
+    return jwt.sign({ email, password }, "MY-SECRET-KEY-TO-HASH-THE-LOGIN",{
+        expiresIn: '30d',
+    });
 };
+
+exports.isAlive = async(req,res,next)=>{
+    try{
+        res.json({
+            status:"Success",
+            message:"Server is Up"
+        })
+    }
+    catch(e){
+        res.json({
+            status:"Fail",
+            message:"Server is down"
+        })
+    }
+}
 
 exports.loginUser = async (req, res, next) => {
     try {
@@ -16,12 +33,14 @@ exports.loginUser = async (req, res, next) => {
         const encoded = await user.correctPassword(password, user.password);
 
         const token = getToken(user.email, user.password);
+
+        user.password = undefined;
         if (encoded) {
-            res
-                .cookie("Access_token", token, {
+            res.cookie("Access_token", token, {
                     httpOnly: true,
                     secure: true,
-                    maxAge: 2 * 24 * 60 * 60 * 1000,
+                    sameSite:"strict",
+                    maxAge: 30 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
                 .json({
@@ -58,11 +77,13 @@ exports.signUp = async (req, res, next) => {
         const token = getToken(newUser.email, newUser.password);
 
         await TempUser.deleteOne({email:newUser.email}) 
-
+        newUser.password = undefined;
+        console.log(token)
         res.cookie("Access_token", token, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 2 * 24 * 60 * 60 * 1000,
+                sameSite:"strict",
+                maxAge: 30 * 24 * 60 * 60 * 1000,
             })
             .status(200)
             .json({
@@ -183,21 +204,22 @@ exports.sendCode=async(req,res,next)=>{
 
 exports.secureRoute=async(req,res,next)=>{
     const token = req.cookies.Access_token;
+    console.log(token)
 
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+    // if (!token) {
+    //     return res.status(401).json({ message: 'Unauthorized' });
+    // }
 
-    jwt.verify(token, 'MY-SECRET-KEY-TO-HASH-THE-LOGIN', (err, decoded) => {
-        if (err) {
-        return res.status(401).json({ message: 'Token is not valid' });
-        }
+    // jwt.verify(token, 'MY-SECRET-KEY-TO-HASH-THE-LOGIN', (err, decoded) => {
+    //     if (err) {
+    //     return res.status(401).json({ message: 'Token is not valid' });
+    //     }
 
-        req.user = decoded;
-        res.status(200).json({
-            status:"success",
-            user:req.user
-        })
+    //     req.user = decoded;
+    //     res.status(200).json({
+    //         status:"success",
+    //         user:req.user
+    //     })
         next();
-    });
+    // });
 }
