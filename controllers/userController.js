@@ -10,6 +10,21 @@ const getToken = (email, password) => {
     });
 };
 
+exports.getData = async(req,res,next)=>{
+    try{
+        res.status(200).json({
+            status:"success",
+            message:"okay"
+        })
+    }
+    catch(e){
+        res.status(400).json({
+            status: "Fail",
+            error: "error",
+        });
+    }
+}
+
 exports.isAlive = async(req,res,next)=>{
     try{
         res.json({
