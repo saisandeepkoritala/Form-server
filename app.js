@@ -12,7 +12,7 @@ app.use(morgan("dev"));
 
 app.use(cors({
     credentials:true,
-    origin:"https://saisandeepkoritala-form-app.netlify.app/"
+    origin:"https://saisandeepkoritala-form-app.netlify.app"
 }));
 
 
