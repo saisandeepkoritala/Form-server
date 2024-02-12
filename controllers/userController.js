@@ -11,6 +11,7 @@ const getToken = (email, password) => {
 };
 
 exports.getData = async(req,res,next)=>{
+    console.log(req.headers)
     try{
         res.status(200).json({
             status:"success",
