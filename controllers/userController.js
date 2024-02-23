@@ -73,6 +73,7 @@ exports.loginUser = async (req, res, next) => {
                     httpOnly: true,
                     secure: true,
                     sameSite:"None",
+                    partitioned: true,
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
@@ -116,6 +117,7 @@ exports.signUp = async (req, res, next) => {
                 httpOnly: true,
                 secure: true,
                 sameSite:"None",
+                partitioned: true,
                 maxAge: 30 * 24 * 60 * 60 * 1000,
             })
             .status(200)
