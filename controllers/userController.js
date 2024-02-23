@@ -26,6 +26,23 @@ exports.getData = async(req,res,next)=>{
     }
 }
 
+exports.getData1 = async(req,res,next)=>{
+    console.log(req.headers)
+    try{
+        res.status(200).json({
+            status:"success",
+            message:"okay"
+        })
+    }
+    catch(e){
+        res.status(400).json({
+            status: "Fail",
+            error: "error",
+        });
+    }
+}
+
+
 exports.isAlive = async(req,res,next)=>{
     try{
         res.json({
@@ -55,7 +72,6 @@ exports.loginUser = async (req, res, next) => {
             res.cookie("Access_token", token, {
                     httpOnly: true,
                     secure: true,
-                    sameSite:"None",
                     maxAge: 30 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
@@ -98,7 +114,6 @@ exports.signUp = async (req, res, next) => {
         res.cookie("Access_token", token, {
                 httpOnly: true,
                 secure: true,
-                sameSite:"None",
                 maxAge: 30 * 24 * 60 * 60 * 1000,
             })
             .status(200)
